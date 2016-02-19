@@ -1,0 +1,28 @@
+-- use Mahout to do clustering analysis
+hadoop fs -mkdir Mahout
+hadoop fs -mkdir Mahout/data
+hadoop fs -put cluster_input Mahout/data
+
+mahout org.apache.mahout.clustering.conversion.InputDriver \
+-i Mahout/data/cluster_input \
+-o Mahout/cluster_seqfiles
+
+mahout seqdumper -i Mahout/cluster_seqfiles
+
+
+mahout kmeans \
+-i Mahout/cluster_seqfiles \
+-c Mahout/initial_centroid \
+-o Mahout/output \
+-k 3 \
+-dm org.apache.mahout.common.distance.SquaredEuclideanDistanceMeasure \
+-x 100 \
+-cd 0.5 \
+-ow \
+-cl \
+-xm sequential
+
+mahout clusterdump \
+-i Mahout/output/clusters-15-final \
+-p Mahout/output/clusteredPoints \
+-o cluster_result.txt
